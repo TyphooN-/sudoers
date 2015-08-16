@@ -1,0 +1,5 @@
+---
+user:
+ - '%TYPH00N\\Domain^Admins'
+privs:
+ - 'ALL=(ALL)    ALL'
