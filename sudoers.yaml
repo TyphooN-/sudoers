@@ -9,20 +9,23 @@
     - vars.yml
 
   tasks:
-    - name: Copy sudoers file for safety
+    - name: 'Delete sudoers tmp file'
+      command: rm -rf /etc/sudoers.tmp
+
+    - name: 'Copy sudoers file for safety'
       command: cp -f /etc/sudoers /etc/sudoers.tmp
 
-    - name: Create sudoers file backup
-      command: cp -f /etc/sudoers /etc/sudoers.bak
+    - name: 'Create sudoers file backup - "{{ ansible_date_time.date }}"'
+      command: cp -f /etc/sudoers /etc/sudoers."{{ ansible_date_time.date }}"
 
-    - name: make sure we can sudo as admin group
-      lineinfile: dest=/etc/sudoers.tmp state=present regexp='^"{{ item.0 }}"' line='"{{ item.0 }}"      "{{ item.1 }}"'
+    - name: 'Add users/groups to sudoers tmp file'
+      lineinfile: dest=/etc/sudoers.tmp state=present regexp='^{{ item.0 }}' line='{{ item.0 }}      {{ item.1 }}'
       with_together:
         - "{{ user }}"
         - "{{ privs }}"
 
-    - name: also make sure ssh-agent works via sudo
+    - name: 'Make sure ssh-agent works via sudo'
       lineinfile: dest=/etc/sudoers.tmp state=present regexp='^Defaults env_keep\+\=SSH_AUTH_SOCK' line='Defaults env_keep+=SSH_AUTH_SOCK'
 
-    - name: Final sudoers file check
+    - name: 'Final sudoers file check'
       shell: visudo -q -c -f /etc/sudoers.tmp && cp -f /etc/sudoers.tmp /etc/sudoers
