@@ -1,10 +1,6 @@
 ---
 - hosts: sudoers 
-  vars:
-    distro: "{{ ansible_distribution }}"
-    pkg_mgr: "{{ ansible_pkg_mgr }}"
-    pbname: "{{ inventory_hostname }}"
-  
+
   vars_files:
     - vars.yml
 
