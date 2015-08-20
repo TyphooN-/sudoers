@@ -1,9 +1,7 @@
 ---
-- hosts: sudoers 
-
+- hosts: sudoers
   vars_files:
     - vars.yml
-
   tasks:
     - name: 'Delete sudoers tmp file'
       command: rm -rf /etc/sudoers.tmp
@@ -17,11 +15,17 @@
     - name: 'Add users/groups to sudoers tmp file'
       lineinfile: dest=/etc/sudoers.tmp state=present regexp='^{{ item.0 }}' line='{{ item.0 }}      {{ item.1 }}'
       with_together:
-        - "{{ user }}"
+        - "{{ add }}"
+        - "{{ privs }}"
+
+    - name: 'Remove users/groups to sudoers tmp file'
+      lineinfile: dest=/etc/sudoers.tmp state=absent regexp='^"{{ item.0 }}"'
+      with_together:
+        - "{{ remove }}"
         - "{{ privs }}"
 
     - name: 'Make sure ssh-agent works via sudo'
       lineinfile: dest=/etc/sudoers.tmp state=present regexp='^Defaults env_keep\+\=SSH_AUTH_SOCK' line='Defaults env_keep+=SSH_AUTH_SOCK'
 
     - name: 'Final sudoers file check'
-      shell: visudo -q -c -f /etc/sudoers.tmp && cp -f /etc/sudoers.tmp /etc/sudoers
+      shell: visudo -c -f /etc/sudoers.tmp && cp -f /etc/sudoers.tmp /etc/sudoers
