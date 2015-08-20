@@ -1,7 +1,11 @@
 ---
-user:
-  - '%TYPH00N\\Domain^Admins'
-  - '%TYPH00N\\Administrators' 
+add:
+  - ''
+  - ''
+  
+remove:
+  -
+  -
 privs:
   - 'ALL=(ALL)    ALL'
   - 'ALL=(ALL)    ALL'
